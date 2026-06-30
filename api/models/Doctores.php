@@ -1,27 +1,61 @@
 <?php
 
-class Doctores{
+class Doctores
+{
     private $idDoctor;
-    private $idUsuario;
+    private $idPersona;
     private $idEspecialidad;
-    private $cedula;
-    private $nombre;
-    private $telefono;
-    private $correo;
+    private $numeroLicencia;
+    private $estado;
+    private $fechaRegistro;
 
-    public function getIdDoctor(){ return $this->idDoctor; }
-    public function getIdUsuario(){ return $this->idUsuario; }
-    public function getIdEspecialidad(){ return $this->idEspecialidad; }
-    public function getCedula(){ return $this->cedula; }
-    public function getNombre(){ return $this->nombre; }
-    public function getTelefono(){ return $this->telefono; }
-    public function getCorreo(){ return $this->correo; }
+    public function getIdDoctor()
+    {
+        return $this->idDoctor;
+    }
+    public function getIdPersona()
+    {
+        return $this->idPersona;
+    }
+    public function getIdEspecialidad()
+    {
+        return $this->idEspecialidad;
+    }
+    public function getNumeroLicencia()
+    {
+        return $this->numeroLicencia;
+    }
+    public function getEstado()
+    {
+        return $this->estado;
+    }
+    public function getFechaRegistro()
+    {
+        return $this->fechaRegistro;
+    }
 
-    public function setIdDoctor($idDoctor){ $this->idDoctor = $idDoctor; }
-    public function setIdUsuario($idUsuario){ $this->idUsuario = $idUsuario; }
-    public function setIdEspecialidad($idEspecialidad){ $this->idEspecialidad = $idEspecialidad; }
-    public function setCedula($cedula){ $this->cedula = $cedula; }
-    public function setNombre($nombre){ $this->nombre = $nombre; }
-    public function setTelefono($telefono){ $this->telefono = $telefono; }
-    public function setCorreo($correo){ $this->correo = $correo; }
+    public function setIdDoctor($idDoctor)
+    {
+        $this->idDoctor = $idDoctor;
+    }
+    public function setIdPersona($idPersona)
+    {
+        $this->idPersona = $idPersona;
+    }
+    public function setIdEspecialidad($idEspecialidad)
+    {
+        $this->idEspecialidad = $idEspecialidad;
+    }
+    public function setNumeroLicencia($numeroLicencia)
+    {
+        $this->numeroLicencia = $numeroLicencia;
+    }
+    public function setEstado($estado)
+    {
+        $this->estado = $estado;
+    }
+    public function setFechaRegistro($fechaRegistro)
+    {
+        $this->fechaRegistro = $fechaRegistro;
+    }
 }

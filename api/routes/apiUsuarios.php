@@ -8,20 +8,11 @@ $metodo = $_SERVER['REQUEST_METHOD'];
 
 switch ($metodo) {
     case 'POST':
-        if(str_contains($uri, 'login')){
-            $controlador -> login();
-        }elseif(str_contains($uri, 'usuario')){
-            $controlador -> registrarUsuario();
-        }else{
-            http_response_code(404);
-            echo json_encode(["error" => "Ruta no encontrada"]);
-        }
-        break;
-
-    case 'PUT':
-        if(str_contains($uri, 'rol')){
-            $controlador -> actualizarRol();
-        }else{
+        if (str_contains($uri, 'login')) {
+            $controlador->login();
+        } elseif (str_contains($uri, 'crear-cuenta')) {
+            $controlador->crearCuentaConInvitacion();
+        } else {
             http_response_code(404);
             echo json_encode(["error" => "Ruta no encontrada"]);
         }

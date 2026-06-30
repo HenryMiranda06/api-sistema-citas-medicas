@@ -2,115 +2,59 @@
 
 require_once "views/respuesta.php";
 require_once "dao/UsuariosDAO.php";
+require_once "dao/InvitacionesUsuarioDAO.php";
 
 class UsuariosController
 {
     private $dao;
+    private $invitacionesDAO;
 
     public function __construct()
     {
         $this->dao = new UsuariosDAO();
+        $this->invitacionesDAO = new InvitacionesUsuarioDAO();
     }
 
     public function login()
     {
         $json = json_decode(file_get_contents("php://input"), true);
 
-        if (!isset($json["correo"]) || !isset($json["clave"])) {
-            convertirJSON([
-                "code" => 400,
-                "message" => [
-                    "success" => false,
-                    "message" => "Correo y clave son obligatorios."
-                ]
-            ]);
-            return;
-        }
-
         $usuario = new Usuarios();
         $usuario->setCorreo($json["correo"]);
         $usuario->setClave($json["clave"]);
 
-        $resultado = $this->dao->login($usuario);
-
         convertirJSON([
             "code" => 200,
-            "message" => $resultado
+            "message" => $this->dao->login($usuario)
         ]);
     }
 
-    public function registrarUsuario()
+    public function crearCuentaConInvitacion()
     {
         $json = json_decode(file_get_contents("php://input"), true);
 
-        if (!isset($json["nombre"]) || !isset($json["correo"]) || !isset($json["clave"])) {
+        $validacion = $this->invitacionesDAO->validarToken($json["token"]);
+
+        if (!$validacion["success"]) {
             convertirJSON([
                 "code" => 400,
-                "message" => [
-                    "success" => false,
-                    "message" => "Nombre, correo y clave son obligatorios."
-                ]
+                "message" => $validacion
             ]);
             return;
         }
+
+        $invitacion = $validacion["message"];
 
         $usuario = new Usuarios();
-        $usuario->setNombre($json["nombre"]);
-        $usuario->setCorreo($json["correo"]);
-        $usuario->setClave($this->hashearClave($json["clave"]));
-        $usuario->setRol("Paciente");
+        $usuario->setIdPersona($invitacion["idPersona"]);
+        $usuario->setCorreo($invitacion["correo"]);
+        $usuario->setClave(password_hash($json["clave"], PASSWORD_BCRYPT));
+        $usuario->setRol($invitacion["rol"]);
         $usuario->setEstado("Activo");
-
-        $resultado = $this->dao->registrarUsuario($usuario);
 
         convertirJSON([
             "code" => 200,
-            "message" => $resultado
+            "message" => $this->dao->crearDesdeInvitacion($usuario, $invitacion["idInvitacion"])
         ]);
-    }
-
-    public function actualizarRol()
-    {
-        $json = json_decode(file_get_contents("php://input"), true);
-
-        if (!isset($json["idUsuario"]) || !isset($json["rol"])) {
-            convertirJSON([
-                "code" => 400,
-                "message" => [
-                    "success" => false,
-                    "message" => "Id de usuario y rol son obligatorios."
-                ]
-            ]);
-            return;
-        }
-
-        if (!$this->validarRol($json["rol"])) {
-            convertirJSON([
-                "code" => 400,
-                "message" => [
-                    "success" => false,
-                    "message" => "Rol no permitido. Use Admin, Doctor o Paciente."
-                ]
-            ]);
-            return;
-        }
-
-        //$resultado = $this->dao->actualizarRol($json["idUsuario"], $json["rol"]);
-
-        /*convertirJSON([
-            "code" => 200,
-            "message" => $resultado
-        ]);*/
-    }
-
-    public function validarRol($rol)
-    {
-        $rolesPermitidos = ["Admin", "Doctor", "Paciente"];
-        return in_array($rol, $rolesPermitidos);
-    }
-
-    public function hashearClave($clave)
-    {
-        return password_hash($clave, PASSWORD_BCRYPT);
     }
 }

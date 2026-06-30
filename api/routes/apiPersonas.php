@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../controllers/PacientesController.php';
+require_once __DIR__ . '/../controllers/PersonasController.php';
 
-$controlador = new PacientesController();
+$controlador = new PersonasController();
 $metodo = $_SERVER['REQUEST_METHOD'];
 $id = $_GET["id"] ?? null;
 
