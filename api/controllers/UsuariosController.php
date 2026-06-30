@@ -12,6 +12,22 @@ class UsuariosController
         $this->dao = new UsuariosDAO();
     }
 
+    public function listar()
+    {
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->listar()
+        ]);
+    }
+
+    public function buscarPorId($idUsuario)
+    {
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->buscarPorId($idUsuario)
+        ]);
+    }
+
     public function login()
     {
         $json = json_decode(file_get_contents("php://input"), true);
@@ -112,5 +128,13 @@ class UsuariosController
     public function hashearClave($clave)
     {
         return password_hash($clave, PASSWORD_BCRYPT);
+    }
+
+    public function eliminar($idUsuario)
+    {
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->eliminar($idUsuario)
+        ]);
     }
 }

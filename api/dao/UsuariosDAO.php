@@ -11,6 +11,28 @@ class UsuariosDAO{
         $this->conexion = $db->Conectar();
     }
 
+    public function listar(){
+        try{
+            $query = "SELECT idUsuario, nombre, correo, rol, estado, fechaRegistro FROM usuarios";
+            $preparado = $this->conexion->prepare($query);
+            $preparado->execute();
+            return $preparado->fetchAll(PDO::FETCH_ASSOC);
+        }catch(PDOException $e){
+            return ["error" => $e->getMessage()];
+        }
+    }
+
+    public function buscarPorId($idUsuario){
+        try{
+            $query = "SELECT idUsuario, nombre, correo, rol, estado, fechaRegistro FROM usuarios WHERE idUsuario = ?";
+            $preparado = $this->conexion->prepare($query);
+            $preparado->execute([$idUsuario]);
+            return $preparado->fetch(PDO::FETCH_ASSOC);
+        }catch(PDOException $e){
+            return ["error" => $e->getMessage()];
+        }
+    }
+
     public function login(Usuarios $usuario){
         try{
             $query = "SELECT * FROM usuarios WHERE correo = ?";
@@ -80,6 +102,17 @@ class UsuariosDAO{
                 "success" => false,
                 "message" => "Error al registrar usuario: " . $e->getMessage()
             ];
+        }
+    }
+
+    public function eliminar($idUsuario){
+        try{
+            $query = "DELETE FROM usuarios WHERE idUsuario = ?";
+            $preparado = $this->conexion->prepare($query);
+            $preparado->execute([$idUsuario]);
+            return ["success" => true, "message" => "Usuario eliminado correctamente."];
+        }catch(PDOException $e){
+            return ["success" => false, "message" => $e->getMessage()];
         }
     }
 }
