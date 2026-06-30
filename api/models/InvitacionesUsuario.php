@@ -1,30 +1,27 @@
 <?php
 
-class Usuarios
+class InvitacionesUsuario
 {
-    private $idUsuario;
+    private $idInvitacion;
     private $idPersona;
-    private $correo;
-    private $clave;
+    private $token;
     private $rol;
     private $estado;
+    private $fechaExpiracion;
+    private $fechaUso;
     private $fechaRegistro;
 
-    public function getIdUsuario()
+    public function getIdInvitacion()
     {
-        return $this->idUsuario;
+        return $this->idInvitacion;
     }
     public function getIdPersona()
     {
         return $this->idPersona;
     }
-    public function getCorreo()
+    public function getToken()
     {
-        return $this->correo;
-    }
-    public function getClave()
-    {
-        return $this->clave;
+        return $this->token;
     }
     public function getRol()
     {
@@ -34,26 +31,30 @@ class Usuarios
     {
         return $this->estado;
     }
+    public function getFechaExpiracion()
+    {
+        return $this->fechaExpiracion;
+    }
+    public function getFechaUso()
+    {
+        return $this->fechaUso;
+    }
     public function getFechaRegistro()
     {
         return $this->fechaRegistro;
     }
 
-    public function setIdUsuario($idUsuario)
+    public function setIdInvitacion($idInvitacion)
     {
-        $this->idUsuario = $idUsuario;
+        $this->idInvitacion = $idInvitacion;
     }
     public function setIdPersona($idPersona)
     {
         $this->idPersona = $idPersona;
     }
-    public function setCorreo($correo)
+    public function setToken($token)
     {
-        $this->correo = $correo;
-    }
-    public function setClave($clave)
-    {
-        $this->clave = $clave;
+        $this->token = $token;
     }
     public function setRol($rol)
     {
@@ -62,6 +63,14 @@ class Usuarios
     public function setEstado($estado)
     {
         $this->estado = $estado;
+    }
+    public function setFechaExpiracion($fechaExpiracion)
+    {
+        $this->fechaExpiracion = $fechaExpiracion;
+    }
+    public function setFechaUso($fechaUso)
+    {
+        $this->fechaUso = $fechaUso;
     }
     public function setFechaRegistro($fechaRegistro)
     {

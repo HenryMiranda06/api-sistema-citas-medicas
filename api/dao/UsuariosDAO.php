@@ -3,116 +3,123 @@
 require_once "config/Conexion.php";
 require_once "models/Usuarios.php";
 
-class UsuariosDAO{
+class UsuariosDAO
+{
     private $conexion;
 
-    public function __construct(){
+    public function __construct()
+    {
         $db = new Conexion();
         $this->conexion = $db->Conectar();
     }
 
-    public function listar(){
-        try{
-            $query = "SELECT idUsuario, nombre, correo, rol, estado, fechaRegistro FROM usuarios";
-            $preparado = $this->conexion->prepare($query);
-            $preparado->execute();
-            return $preparado->fetchAll(PDO::FETCH_ASSOC);
-        }catch(PDOException $e){
-            return ["error" => $e->getMessage()];
-        }
-    }
+    public function login(Usuarios $usuario)
+    {
+        try {
+            $query = "SELECT u.*, p.nombres, p.apellidos
+                    FROM usuarios u
+                    INNER JOIN personas p ON u.idPersona = p.idPersona
+                    WHERE u.correo = ?";
 
-    public function buscarPorId($idUsuario){
-        try{
-            $query = "SELECT idUsuario, nombre, correo, rol, estado, fechaRegistro FROM usuarios WHERE idUsuario = ?";
-            $preparado = $this->conexion->prepare($query);
-            $preparado->execute([$idUsuario]);
-            return $preparado->fetch(PDO::FETCH_ASSOC);
-        }catch(PDOException $e){
-            return ["error" => $e->getMessage()];
-        }
-    }
-
-    public function login(Usuarios $usuario){
-        try{
-            $query = "SELECT * FROM usuarios WHERE correo = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$usuario->getCorreo()]);
             $resultado = $preparado->fetch(PDO::FETCH_ASSOC);
 
-            if(!$resultado){
-                return ["error" => "El correo indicado no existe, por favor cree un usuario."];
-            }
-
-            if($resultado["estado"] !== "Activo"){
-                return ["error" => "La cuenta se encuentra inactiva."];
-            }
-
-            if(password_verify($usuario->getClave(), $resultado["clave"])){
+            if (!$resultado) {
                 return [
-                    "mensaje" => "Login exitoso.",
-                    "usuario" => [
-                        "idUsuario" => $resultado["idUsuario"],
-                        "nombre" => $resultado["nombre"],
-                        "correo" => $resultado["correo"],
-                        "rol" => $resultado["rol"],
-                        "estado" => $resultado["estado"]
-                    ]
+                    "success" => false,
+                    "message" => "El correo indicado no existe."
                 ];
             }
 
-            return ["error" => "Correo o clave incorrectos."];
-        }catch(PDOException $e){
-            return ["error" => "Error en login: " . $e->getMessage()];
+            if ($resultado["estado"] !== "Activo") {
+                return [
+                    "success" => false,
+                    "message" => "La cuenta se encuentra inactiva."
+                ];
+            }
+
+            if (!password_verify($usuario->getClave(), $resultado["clave"])) {
+                return [
+                    "success" => false,
+                    "message" => "Correo o clave incorrectos."
+                ];
+            }
+
+            return [
+                "success" => true,
+                "message" => "Login exitoso.",
+                "usuario" => [
+                    "idUsuario" => $resultado["idUsuario"],
+                    "idPersona" => $resultado["idPersona"],
+                    "nombres" => $resultado["nombres"],
+                    "apellidos" => $resultado["apellidos"],
+                    "correo" => $resultado["correo"],
+                    "rol" => $resultado["rol"],
+                    "estado" => $resultado["estado"]
+                ]
+            ];
+        } catch (PDOException $e) {
+            return [
+                "success" => false,
+                "message" => "Error en login: " . $e->getMessage()
+            ];
         }
     }
 
-    public function registrarUsuario(Usuarios $usuario){
-        try{
-            $queryVerificar = "SELECT idUsuario FROM usuarios WHERE correo = ?";
-            $preparadoVerificar = $this->conexion->prepare($queryVerificar);
-            $preparadoVerificar->execute([$usuario->getCorreo()]);
+    public function crearDesdeInvitacion(Usuarios $usuario, $idInvitacion)
+    {
+        try {
+            $this->conexion->beginTransaction();
 
-            if($preparadoVerificar->fetch()){
+            $queryUsuarioExistente = "SELECT idUsuario FROM usuarios WHERE idPersona = ? OR correo = ?";
+            $preparadoUsuarioExistente = $this->conexion->prepare($queryUsuarioExistente);
+            $preparadoUsuarioExistente->execute([
+                $usuario->getIdPersona(),
+                $usuario->getCorreo()
+            ]);
+
+            if ($preparadoUsuarioExistente->fetch()) {
+                $this->conexion->rollBack();
+
                 return [
                     "success" => false,
-                    "message" => "Ya existe un usuario registrado con ese correo."
+                    "message" => "La persona ya tiene una cuenta creada."
                 ];
             }
 
-            $query = "INSERT INTO usuarios (nombre, correo, clave, rol, estado, fechaRegistro)
-                    VALUES (?, ?, ?, ?, ?, NOW())";
+            $queryUsuario = "INSERT INTO usuarios (idPersona, correo, clave, rol, estado)
+                    VALUES (?, ?, ?, ?, ?)";
 
-            $preparado = $this->conexion->prepare($query);
-
-            $preparado->execute([
-                $usuario->getNombre(),
+            $preparadoUsuario = $this->conexion->prepare($queryUsuario);
+            $preparadoUsuario->execute([
+                $usuario->getIdPersona(),
                 $usuario->getCorreo(),
                 $usuario->getClave(),
                 $usuario->getRol(),
                 $usuario->getEstado()
             ]);
 
+            $queryInvitacion = "UPDATE invitaciones_usuario
+                    SET estado = 'Usado', fechaUso = NOW()
+                    WHERE idInvitacion = ?";
+
+            $preparadoInvitacion = $this->conexion->prepare($queryInvitacion);
+            $preparadoInvitacion->execute([$idInvitacion]);
+
+            $this->conexion->commit();
+
             return [
                 "success" => true,
-                "message" => "Usuario registrado correctamente."
+                "message" => "Cuenta creada correctamente."
             ];
-        }catch(PDOException $e){
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+
             return [
                 "success" => false,
-                "message" => "Error al registrar usuario: " . $e->getMessage()
+                "message" => "Error al crear cuenta: " . $e->getMessage()
             ];
-        }
-    }
-
-    public function eliminar($idUsuario){
-        try{
-            $query = "DELETE FROM usuarios WHERE idUsuario = ?";
-            $preparado = $this->conexion->prepare($query);
-            $preparado->execute([$idUsuario]);
-            return ["success" => true, "message" => "Usuario eliminado correctamente."];
-        }catch(PDOException $e){
-            return ["success" => false, "message" => $e->getMessage()];
         }
     }
 }
