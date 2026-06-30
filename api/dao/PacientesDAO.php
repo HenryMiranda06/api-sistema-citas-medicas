@@ -13,7 +13,7 @@ class PacientesDAO{
 
     public function listar(){
         try{
-            $query = "SELECT * FROM Pacientes";
+            $query = "SELECT * FROM pacientes";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute();
             return $preparado->fetchAll(PDO::FETCH_ASSOC);
@@ -24,7 +24,7 @@ class PacientesDAO{
 
     public function buscarPorId($idPaciente){
         try{
-            $query = "SELECT * FROM Pacientes WHERE idPaciente = ?";
+            $query = "SELECT * FROM pacientes WHERE idPaciente = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idPaciente]);
             return $preparado->fetch(PDO::FETCH_ASSOC);
@@ -35,7 +35,7 @@ class PacientesDAO{
 
     public function registrar(Pacientes $paciente){
         try{
-            $query = "INSERT INTO Pacientes (idUsuario, cedula, nombre, telefono, fechaNacimiento, direccion)
+            $query = "INSERT INTO pacientes (idUsuario, cedula, nombre, telefono, fechaNacimiento, direccion)
                     VALUES (?, ?, ?, ?, ?, ?)";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -54,7 +54,7 @@ class PacientesDAO{
 
     public function actualizar(Pacientes $paciente){
         try{
-            $query = "UPDATE Pacientes SET idUsuario = ?, cedula = ?, nombre = ?, telefono = ?, fechaNacimiento = ?, direccion = ?
+            $query = "UPDATE pacientes SET idUsuario = ?, cedula = ?, nombre = ?, telefono = ?, fechaNacimiento = ?, direccion = ?
                     WHERE idPaciente = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -74,7 +74,7 @@ class PacientesDAO{
 
     public function eliminar($idPaciente){
         try{
-            $query = "DELETE FROM Pacientes WHERE idPaciente = ?";
+            $query = "DELETE FROM pacientes WHERE idPaciente = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idPaciente]);
             return ["success" => true, "message" => "Paciente eliminado correctamente."];

@@ -13,7 +13,7 @@ class CitasDAO{
 
     public function listar(){
         try{
-            $query = "SELECT * FROM Citas";
+            $query = "SELECT * FROM citas";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute();
             return $preparado->fetchAll(PDO::FETCH_ASSOC);
@@ -24,7 +24,7 @@ class CitasDAO{
 
     public function buscarPorId($idCita){
         try{
-            $query = "SELECT * FROM Citas WHERE idCita = ?";
+            $query = "SELECT * FROM citas WHERE idCita = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idCita]);
             return $preparado->fetch(PDO::FETCH_ASSOC);
@@ -35,7 +35,7 @@ class CitasDAO{
 
     public function registrar(Citas $cita){
         try{
-            $query = "INSERT INTO Citas (idPaciente, idDoctor, idEspecialidad, idAgenda, fecha, hora, motivo, estado, fechaRegistro)
+            $query = "INSERT INTO citas (idPaciente, idDoctor, idEspecialidad, idAgenda, fecha, hora, motivo, estado, fechaRegistro)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -56,7 +56,7 @@ class CitasDAO{
 
     public function actualizar(Citas $cita){
         try{
-            $query = "UPDATE Citas SET idPaciente = ?, idDoctor = ?, idEspecialidad = ?, idAgenda = ?, fecha = ?, hora = ?, motivo = ?, estado = ?
+            $query = "UPDATE citas SET idPaciente = ?, idDoctor = ?, idEspecialidad = ?, idAgenda = ?, fecha = ?, hora = ?, motivo = ?, estado = ?
                     WHERE idCita = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -78,7 +78,7 @@ class CitasDAO{
 
     public function eliminar($idCita){
         try{
-            $query = "DELETE FROM Citas WHERE idCita = ?";
+            $query = "DELETE FROM citas WHERE idCita = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idCita]);
             return ["success" => true, "message" => "Cita eliminada correctamente."];

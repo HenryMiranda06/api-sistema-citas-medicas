@@ -13,7 +13,7 @@ class EspecialidadesDAO{
 
     public function listar(){
         try{
-            $query = "SELECT * FROM Especialidades";
+            $query = "SELECT * FROM especialidades";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute();
             return $preparado->fetchAll(PDO::FETCH_ASSOC);
@@ -24,7 +24,7 @@ class EspecialidadesDAO{
 
     public function buscarPorId($idEspecialidad){
         try{
-            $query = "SELECT * FROM Especialidades WHERE idEspecialidad = ?";
+            $query = "SELECT * FROM especialidades WHERE idEspecialidad = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idEspecialidad]);
             return $preparado->fetch(PDO::FETCH_ASSOC);
@@ -35,7 +35,7 @@ class EspecialidadesDAO{
 
     public function registrar(Especialidades $especialidad){
         try{
-            $query = "INSERT INTO Especialidades (nombre, descripcion, estado)
+            $query = "INSERT INTO especialidades (nombre, descripcion, estado)
                     VALUES (?, ?, ?)";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -51,7 +51,7 @@ class EspecialidadesDAO{
 
     public function actualizar(Especialidades $especialidad){
         try{
-            $query = "UPDATE Especialidades SET nombre = ?, descripcion = ?, estado = ?
+            $query = "UPDATE especialidades SET nombre = ?, descripcion = ?, estado = ?
                     WHERE idEspecialidad = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -68,7 +68,7 @@ class EspecialidadesDAO{
 
     public function eliminar($idEspecialidad){
         try{
-            $query = "DELETE FROM Especialidades WHERE idEspecialidad = ?";
+            $query = "DELETE FROM especialidades WHERE idEspecialidad = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idEspecialidad]);
             return ["success" => true, "message" => "Especialidad eliminada correctamente."];

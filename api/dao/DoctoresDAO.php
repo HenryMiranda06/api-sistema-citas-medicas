@@ -13,7 +13,7 @@ class DoctoresDAO{
 
     public function listar(){
         try{
-            $query = "SELECT * FROM Doctores";
+            $query = "SELECT * FROM doctores";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute();
             return $preparado->fetchAll(PDO::FETCH_ASSOC);
@@ -24,7 +24,7 @@ class DoctoresDAO{
 
     public function buscarPorId($idDoctor){
         try{
-            $query = "SELECT * FROM Doctores WHERE idDoctor = ?";
+            $query = "SELECT * FROM doctores WHERE idDoctor = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idDoctor]);
             return $preparado->fetch(PDO::FETCH_ASSOC);
@@ -35,7 +35,7 @@ class DoctoresDAO{
 
     public function registrar(Doctores $doctor){
         try{
-            $query = "INSERT INTO Doctores (idUsuario, idEspecialidad, cedula, nombre, telefono, correo)
+            $query = "INSERT INTO doctores (idUsuario, idEspecialidad, cedula, nombre, telefono, correo)
                     VALUES (?, ?, ?, ?, ?, ?)";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -54,12 +54,12 @@ class DoctoresDAO{
 
     public function actualizar(Doctores $doctor){
         try{
-            $query = "UPDATE Doctores SET idUsuario = ?, idEspecialidad = ?, cedula = ?, nombre = ?, telefono = ?, correo = ?
+            $query = "UPDATE doctores SET idUsuario = ?, idEspecialidad = ?, cedula = ?, nombre = ?, telefono = ?, correo = ?
                     WHERE idDoctor = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
                 $doctor->getIdUsuario(),
-                $doctor->getIdEspecialidad(),
+                $doctor-> getIdEspecialidad(),
                 $doctor->getCedula(),
                 $doctor->getNombre(),
                 $doctor->getTelefono(),
@@ -74,7 +74,7 @@ class DoctoresDAO{
 
     public function eliminar($idDoctor){
         try{
-            $query = "DELETE FROM Doctores WHERE idDoctor = ?";
+            $query = "DELETE FROM doctores WHERE idDoctor = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idDoctor]);
             return ["success" => true, "message" => "Doctor eliminado correctamente."];

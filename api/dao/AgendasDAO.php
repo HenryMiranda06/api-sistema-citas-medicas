@@ -13,7 +13,7 @@ class AgendasDAO{
 
     public function listar(){
         try{
-            $query = "SELECT * FROM Agenda";
+            $query = "SELECT * FROM agenda";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute();
             return $preparado->fetchAll(PDO::FETCH_ASSOC);
@@ -24,7 +24,7 @@ class AgendasDAO{
 
     public function buscarPorId($idAgenda){
         try{
-            $query = "SELECT * FROM Agenda WHERE idAgenda = ?";
+            $query = "SELECT * FROM agenda WHERE idAgenda = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idAgenda]);
             return $preparado->fetch(PDO::FETCH_ASSOC);
@@ -35,7 +35,7 @@ class AgendasDAO{
 
     public function registrar(Agendas $agenda){
         try{
-            $query = "INSERT INTO Agenda (idDoctor, fecha, horaInicio, horaFin, estado)
+            $query = "INSERT INTO agenda (idDoctor, fecha, horaInicio, horaFin, estado)
                     VALUES (?, ?, ?, ?, ?)";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -53,7 +53,7 @@ class AgendasDAO{
 
     public function actualizar(Agendas $agenda){
         try{
-            $query = "UPDATE Agenda SET idDoctor = ?, fecha = ?, horaInicio = ?, horaFin = ?, estado = ?
+            $query = "UPDATE agenda SET idDoctor = ?, fecha = ?, horaInicio = ?, horaFin = ?, estado = ?
                     WHERE idAgenda = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -72,7 +72,7 @@ class AgendasDAO{
 
     public function eliminar($idAgenda){
         try{
-            $query = "DELETE FROM Agenda WHERE idAgenda = ?";
+            $query = "DELETE FROM agenda WHERE idAgenda = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idAgenda]);
             return ["success" => true, "message" => "Agenda eliminada correctamente."];
