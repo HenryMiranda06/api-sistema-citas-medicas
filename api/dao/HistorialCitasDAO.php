@@ -13,7 +13,7 @@ class HistorialCitasDAO{
 
     public function listar(){
         try{
-            $query = "SELECT * FROM HistorialCitas";
+            $query = "SELECT * FROM historial_citas";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute();
             return $preparado->fetchAll(PDO::FETCH_ASSOC);
@@ -24,7 +24,7 @@ class HistorialCitasDAO{
 
     public function buscarPorId($idHistorial){
         try{
-            $query = "SELECT * FROM HistorialCitas WHERE idHistorial = ?";
+            $query = "SELECT * FROM historial_citas WHERE idHistorial = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idHistorial]);
             return $preparado->fetch(PDO::FETCH_ASSOC);
@@ -35,7 +35,7 @@ class HistorialCitasDAO{
 
     public function registrar(HistorialCitas $historial){
         try{
-            $query = "INSERT INTO HistorialCitas (idCita, observaciones, diagnostico, tratamiento, fechaRegistro)
+            $query = "INSERT INTO historial_citas (idCita, observaciones, diagnostico, tratamiento, fechaRegistro)
                     VALUES (?, ?, ?, ?, NOW())";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -52,7 +52,7 @@ class HistorialCitasDAO{
 
     public function actualizar(HistorialCitas $historial){
         try{
-            $query = "UPDATE HistorialCitas SET idCita = ?, observaciones = ?, diagnostico = ?, tratamiento = ?
+            $query = "UPDATE historial_citas SET idCita = ?, observaciones = ?, diagnostico = ?, tratamiento = ?
                     WHERE idHistorial = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([
@@ -70,7 +70,7 @@ class HistorialCitasDAO{
 
     public function eliminar($idHistorial){
         try{
-            $query = "DELETE FROM HistorialCitas WHERE idHistorial = ?";
+            $query = "DELETE FROM historial_citas WHERE idHistorial = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$idHistorial]);
             return ["success" => true, "message" => "Historial eliminado correctamente."];

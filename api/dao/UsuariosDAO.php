@@ -13,7 +13,7 @@ class UsuariosDAO{
 
     public function login(Usuarios $usuario){
         try{
-            $query = "SELECT * FROM Usuarios WHERE correo = ?";
+            $query = "SELECT * FROM usuarios WHERE correo = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$usuario->getCorreo()]);
             $resultado = $preparado->fetch(PDO::FETCH_ASSOC);
@@ -47,7 +47,7 @@ class UsuariosDAO{
 
     public function registrarUsuario(Usuarios $usuario){
         try{
-            $queryVerificar = "SELECT idUsuario FROM Usuarios WHERE correo = ?";
+            $queryVerificar = "SELECT idUsuario FROM usuarios WHERE correo = ?";
             $preparadoVerificar = $this->conexion->prepare($queryVerificar);
             $preparadoVerificar->execute([$usuario->getCorreo()]);
 
@@ -58,7 +58,7 @@ class UsuariosDAO{
                 ];
             }
 
-            $query = "INSERT INTO Usuarios (nombre, correo, clave, rol, estado, fechaRegistro)
+            $query = "INSERT INTO usuarios (nombre, correo, clave, rol, estado, fechaRegistro)
                     VALUES (?, ?, ?, ?, ?, NOW())";
 
             $preparado = $this->conexion->prepare($query);
