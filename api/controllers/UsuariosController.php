@@ -15,6 +15,22 @@ class UsuariosController
         $this->invitacionesDAO = new InvitacionesUsuarioDAO();
     }
 
+    public function listar()
+    {
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->listar()
+        ]);
+    }
+
+    public function buscarPorId($idUsuario)
+    {
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->buscarPorId($idUsuario)
+        ]);
+    }
+
     public function login()
     {
         $json = json_decode(file_get_contents("php://input"), true);
