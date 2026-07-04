@@ -17,24 +17,42 @@ class InvitacionesUsuarioController
         $json = json_decode(file_get_contents("php://input"), true);
 
         $invitacion = new InvitacionesUsuario();
+
+        $token = $this->crearToken();
+        $hashToken = $this->hashearToken($token);
+
         $invitacion->setIdPersona($json["idPersona"]);
-        $invitacion->setToken(bin2hex(random_bytes(32)));
+        $invitacion->setToken($hashToken);
         $invitacion->setRol($json["rol"]);
-        $invitacion->setFechaExpiracion($json["fechaExpiracion"]);
+        $invitacion->setEstado("Pendiente");
+
+        $resultado = $this->dao->crearInvitacion($invitacion);
+
+        if($resultado["success"]){
+            $resultado["token"] = $token;
+        }
 
         convertirJSON([
             "code" => 200,
-            "message" => $this->dao->crearInvitacion($invitacion)
+            "message" => $resultado
         ]);
     }
 
-    public function validarToken()
-    {
-        $json = json_decode(file_get_contents("php://input"), true);
-
+    public function validarToken($token){
         convertirJSON([
             "code" => 200,
-            "message" => $this->dao->validarToken($json["token"])
+            "message" => $this->dao->validarToken($token)
         ]);
+    }
+
+    public function hashearToken($token){
+        $hash = password_hash($token, PASSWORD_BCRYPT);
+        return $hash;
+    }
+
+    public function crearToken()
+    {
+        $token = bin2hex(random_bytes(32));
+        return $token;
     }
 }

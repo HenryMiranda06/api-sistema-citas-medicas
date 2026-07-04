@@ -29,7 +29,7 @@ class UsuariosController
         ]);
     }
 
-    public function crearCuentaConInvitacion()
+    public function crearCuenta()
     {
         $json = json_decode(file_get_contents("php://input"), true);
 
@@ -43,18 +43,20 @@ class UsuariosController
             return;
         }
 
-        $invitacion = $validacion["message"];
+        $idPersona = $validacion["idPersona"];
+        $rol = $validacion["rol"];
 
         $usuario = new Usuarios();
-        $usuario->setIdPersona($invitacion["idPersona"]);
-        $usuario->setCorreo($invitacion["correo"]);
+
+        $usuario->setIdPersona($idPersona);
+        $usuario->setCorreo($json["correo"]);
         $usuario->setClave(password_hash($json["clave"], PASSWORD_BCRYPT));
-        $usuario->setRol($invitacion["rol"]);
+        $usuario->setRol($rol);
         $usuario->setEstado("Activo");
 
         convertirJSON([
             "code" => 200,
-            "message" => $this->dao->crearDesdeInvitacion($usuario, $invitacion["idInvitacion"])
+            "message" => $this->dao->crearCuenta($usuario, $validacion["idInvitacion"])
         ]);
     }
 }

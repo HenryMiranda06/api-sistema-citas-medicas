@@ -7,8 +7,6 @@ class InvitacionesUsuario
     private $token;
     private $rol;
     private $estado;
-    private $fechaExpiracion;
-    private $fechaUso;
     private $fechaRegistro;
 
     public function getIdInvitacion()
@@ -30,14 +28,6 @@ class InvitacionesUsuario
     public function getEstado()
     {
         return $this->estado;
-    }
-    public function getFechaExpiracion()
-    {
-        return $this->fechaExpiracion;
-    }
-    public function getFechaUso()
-    {
-        return $this->fechaUso;
     }
     public function getFechaRegistro()
     {
@@ -63,14 +53,6 @@ class InvitacionesUsuario
     public function setEstado($estado)
     {
         $this->estado = $estado;
-    }
-    public function setFechaExpiracion($fechaExpiracion)
-    {
-        $this->fechaExpiracion = $fechaExpiracion;
-    }
-    public function setFechaUso($fechaUso)
-    {
-        $this->fechaUso = $fechaUso;
     }
     public function setFechaRegistro($fechaRegistro)
     {

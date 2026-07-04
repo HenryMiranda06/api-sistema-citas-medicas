@@ -13,13 +13,10 @@ class UsuariosDAO
         $this->conexion = $db->Conectar();
     }
 
-    public function login(Usuarios $usuario)
+   public function login(Usuarios $usuario)
     {
         try {
-            $query = "SELECT u.*, p.nombres, p.apellidos
-                    FROM usuarios u
-                    INNER JOIN personas p ON u.idPersona = p.idPersona
-                    WHERE u.correo = ?";
+            $query = "SELECT idUsuario, correo, clave, estado FROM usuarios WHERE correo = ?";
 
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$usuario->getCorreo()]);
@@ -28,7 +25,7 @@ class UsuariosDAO
             if (!$resultado) {
                 return [
                     "success" => false,
-                    "message" => "El correo indicado no existe."
+                    "message" => "Correo o clave incorrectos."
                 ];
             }
 
@@ -48,16 +45,7 @@ class UsuariosDAO
 
             return [
                 "success" => true,
-                "message" => "Login exitoso.",
-                "usuario" => [
-                    "idUsuario" => $resultado["idUsuario"],
-                    "idPersona" => $resultado["idPersona"],
-                    "nombres" => $resultado["nombres"],
-                    "apellidos" => $resultado["apellidos"],
-                    "correo" => $resultado["correo"],
-                    "rol" => $resultado["rol"],
-                    "estado" => $resultado["estado"]
-                ]
+                "message" => "Login exitoso."
             ];
         } catch (PDOException $e) {
             return [
@@ -67,29 +55,31 @@ class UsuariosDAO
         }
     }
 
-    public function crearDesdeInvitacion(Usuarios $usuario, $idInvitacion)
+   public function crearCuenta(Usuarios $usuario, $idInvitacion)
     {
         try {
             $this->conexion->beginTransaction();
 
-            $queryUsuarioExistente = "SELECT idUsuario FROM usuarios WHERE idPersona = ? OR correo = ?";
-            $preparadoUsuarioExistente = $this->conexion->prepare($queryUsuarioExistente);
-            $preparadoUsuarioExistente->execute([
+            $queryValidacion = "SELECT idUsuario FROM usuarios 
+                    WHERE estado = 'Activo' 
+                    AND (idPersona = ? OR correo = ?)";
+
+            $stmt = $this->conexion->prepare($queryValidacion);
+            $stmt->execute([
                 $usuario->getIdPersona(),
                 $usuario->getCorreo()
             ]);
 
-            if ($preparadoUsuarioExistente->fetch()) {
+            if ($stmt->fetch()) {
                 $this->conexion->rollBack();
 
                 return [
                     "success" => false,
-                    "message" => "La persona ya tiene una cuenta creada."
+                    "message" => "Ya existe una cuenta activa para esta persona o correo."
                 ];
             }
 
-            $queryUsuario = "INSERT INTO usuarios (idPersona, correo, clave, rol, estado)
-                    VALUES (?, ?, ?, ?, ?)";
+            $queryUsuario = "INSERT INTO usuarios (idPersona, correo, clave, rol, estado) VALUES (?, ?, ?, ?, ?)";
 
             $preparadoUsuario = $this->conexion->prepare($queryUsuario);
             $preparadoUsuario->execute([
@@ -100,9 +90,7 @@ class UsuariosDAO
                 $usuario->getEstado()
             ]);
 
-            $queryInvitacion = "UPDATE invitaciones_usuario
-                    SET estado = 'Usado', fechaUso = NOW()
-                    WHERE idInvitacion = ?";
+            $queryInvitacion = "UPDATE invitaciones_usuario SET estado = 'Usado' WHERE idInvitacion = ?";
 
             $preparadoInvitacion = $this->conexion->prepare($queryInvitacion);
             $preparadoInvitacion->execute([$idInvitacion]);
