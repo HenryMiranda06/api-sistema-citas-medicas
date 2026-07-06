@@ -13,6 +13,9 @@ switch ($metodo) {
             $controlador->crearInvitacion();
         }
         break;
+    case 'GET':
+        $controlador->obtenerInvitaciones();
+        break;
 
     default:
         http_response_code(405);

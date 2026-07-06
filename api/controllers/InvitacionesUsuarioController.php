@@ -12,6 +12,15 @@ class InvitacionesUsuarioController
         $this->dao = new InvitacionesUsuarioDAO();
     }
 
+    public function obtenerInvitaciones(){
+        $invitaciones = $this->dao->obtenerInvitaciones();
+
+        convertirJSON([
+            "code" => 200,
+            "message" => $invitaciones
+        ]);
+    }
+
     public function crearInvitacion()
     {
         $json = json_decode(file_get_contents("php://input"), true);

@@ -17,16 +17,43 @@ class UsuariosController
 
     public function login()
     {
+        session_start();
+
         $json = json_decode(file_get_contents("php://input"), true);
 
         $usuario = new Usuarios();
         $usuario->setCorreo($json["correo"]);
         $usuario->setClave($json["clave"]);
 
-        convertirJSON([
-            "code" => 200,
-            "message" => $this->dao->login($usuario)
-        ]);
+        try {
+            $resultado = $this->dao->login($usuario);
+
+            if ($resultado === null) {
+                convertirJSON(["code" => 401, "success" => false, "message" => "Correo o clave incorrectos."]);
+                return;
+            }
+
+            if ($resultado === "inactivo") {
+                convertirJSON(["code" => 403, "success" => false, "message" => "La cuenta se encuentra inactiva."]);
+                return;
+            }
+
+            $_SESSION['idUsuario'] = $resultado['idUsuario'];
+            $_SESSION['rol'] = $resultado['rol'];
+
+            convertirJSON([
+                "code" => 200,
+                "success" => true,
+                "usuario" => [
+                    "id" => $resultado["idUsuario"],
+                    "correo" => $resultado["correo"],
+                    "rol" => $resultado["rol"]
+                ]
+            ]);
+
+        } catch (PDOException $e) {
+            convertirJSON(["code" => 500, "success" => false, "message" => "Error en login: " . $e->getMessage()]);
+        }
     }
 
     public function crearCuenta()

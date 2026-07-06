@@ -16,42 +16,27 @@ class UsuariosDAO
    public function login(Usuarios $usuario)
     {
         try {
-            $query = "SELECT idUsuario, correo, clave, estado FROM usuarios WHERE correo = ?";
-
+            $query = "SELECT idUsuario, correo, clave, estado, rol FROM usuarios WHERE correo = ?";
             $preparado = $this->conexion->prepare($query);
             $preparado->execute([$usuario->getCorreo()]);
             $resultado = $preparado->fetch(PDO::FETCH_ASSOC);
 
             if (!$resultado) {
-                return [
-                    "success" => false,
-                    "message" => "Correo o clave incorrectos."
-                ];
+                return null; 
             }
 
             if ($resultado["estado"] !== "Activo") {
-                return [
-                    "success" => false,
-                    "message" => "La cuenta se encuentra inactiva."
-                ];
+                return "inactivo";
             }
 
             if (!password_verify($usuario->getClave(), $resultado["clave"])) {
-                return [
-                    "success" => false,
-                    "message" => "Correo o clave incorrectos."
-                ];
+                return null;
             }
 
-            return [
-                "success" => true,
-                "message" => "Login exitoso."
-            ];
+            return $resultado; 
+
         } catch (PDOException $e) {
-            return [
-                "success" => false,
-                "message" => "Error en login: " . $e->getMessage()
-            ];
+            throw $e; 
         }
     }
 
