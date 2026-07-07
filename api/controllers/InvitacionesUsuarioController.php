@@ -64,4 +64,22 @@ class InvitacionesUsuarioController
         $token = bin2hex(random_bytes(32));
         return $token;
     }
+
+    public function eliminarInvitacion($idInvitacion){
+        if (!$idInvitacion) {
+            convertirJSON([
+                "code" => 200,
+                "message" => [
+                    "success" => false,
+                    "message" => "No se recibió el id de la invitación."
+                ]
+            ]);
+            return;
+        }
+
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->eliminarInvitacion($idInvitacion)
+        ]);
+    }
 }

@@ -24,11 +24,20 @@ class AgendasController{
         ]);
     }
 
+    public function buscarPorDoctor($idUsuario){
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->buscarPorDoctor($idUsuario)
+        ]);
+    }
+
     public function registrar(){
         $json = json_decode(file_get_contents("php://input"), true);
 
+        $idDoctor = $this->dao->buscarDoctor($json["id"]);
+
         $agenda = new Agendas();
-        $agenda -> setIdDoctor($json["idDoctor"]);
+        $agenda -> setIdDoctor($idDoctor);
         $agenda -> setFecha($json["fecha"]);
         $agenda -> setHoraInicio($json["horaInicio"]);
         $agenda -> setHoraFin($json["horaFin"]);

@@ -11,9 +11,12 @@ class CitasController{
     }
 
     public function listar(){
+        $idUsuario = $_GET['idUsuario'] ?? null;
+        $rol = $_GET['rol'] ?? null;
+
         convertirJSON([
             "code" => 200,
-            "message" => $this->dao->listar()
+            "message" => $this->dao->listar($idUsuario, $rol)
         ]);
     }
 

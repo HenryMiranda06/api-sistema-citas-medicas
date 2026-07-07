@@ -11,12 +11,35 @@ class CitasDAO{
         $this->conexion = $db->Conectar();
     }
 
-    public function listar(){
+    public function listar($idUsuario = null, $rol = null){
         try{
-            $query = "SELECT * FROM citas";
-            $preparado = $this->conexion->prepare($query);
-            $preparado->execute();
+            if (!$rol || $rol === 'Admin') {
+                $query = "SELECT * FROM citas";
+                $preparado = $this->conexion->prepare($query);
+                $preparado->execute();
+
+            } elseif ($rol === 'Paciente') {
+                $query = "SELECT c.* FROM citas c
+                        INNER JOIN pacientes p ON c.idPaciente = p.idPaciente
+                        INNER JOIN usuarios u ON p.idPersona = u.idPersona
+                        WHERE u.idUsuario = ?";
+                $preparado = $this->conexion->prepare($query);
+                $preparado->execute([$idUsuario]);
+
+            } elseif ($rol === 'Doctor') {
+                $query = "SELECT c.* FROM citas c
+                        INNER JOIN doctores d ON c.idDoctor = d.idDoctor
+                        INNER JOIN usuarios u ON d.idPersona = u.idPersona
+                        WHERE u.idUsuario = ?";
+                $preparado = $this->conexion->prepare($query);
+                $preparado->execute([$idUsuario]);
+
+            } else {
+                return [];
+            }
+
             return $preparado->fetchAll(PDO::FETCH_ASSOC);
+
         }catch(PDOException $e){
             return ["error" => $e->getMessage()];
         }
@@ -48,7 +71,12 @@ class CitasDAO{
                 $cita->getMotivo(),
                 $cita->getEstado()
             ]);
-            return ["success" => true, "message" => "Cita registrada correctamente."];
+
+            return [
+                "success" => true,
+                "message" => "Cita registrada correctamente.",
+                "idCita" => $this->conexion->lastInsertId()
+            ];
         }catch(PDOException $e){
             return ["success" => false, "message" => $e->getMessage()];
         }

@@ -83,4 +83,24 @@ class InvitacionesUsuarioDAO
             "message" => "Token inválido o expirado"
         ];
     }
+
+    public function eliminarInvitacion($idInvitacion){
+        try{
+            $query = "DELETE FROM invitaciones_usuario WHERE idInvitacion = ?";
+
+            $preparado = $this->conexion->prepare($query);
+            $preparado->execute([$idInvitacion]);
+
+            return [
+                "success" => true,
+                "message" => "Invitación eliminada correctamente."
+            ];
+
+        }catch(PDOException $e){
+            return [
+                "success" => false,
+                "message" => $e->getMessage()
+            ];
+        }
+    }
 }

@@ -17,6 +17,10 @@ switch ($metodo) {
         $controlador->obtenerInvitaciones();
         break;
 
+    case 'DELETE':
+        $controlador->eliminarInvitacion($_GET["id"] ?? null);
+        break;
+
     default:
         http_response_code(405);
         echo json_encode(["error" => "Método no permitido"]);

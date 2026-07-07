@@ -5,10 +5,15 @@ require_once __DIR__ . '/../controllers/AgendasController.php';
 $controlador = new AgendasController();
 $metodo = $_SERVER['REQUEST_METHOD'];
 $id = $_GET["id"] ?? null;
+$idUsuario = $_GET["idUsuario"] ?? null;
 
 switch ($metodo) {
     case 'GET':
-        $id ? $controlador -> buscarPorId($id) : $controlador -> listar();
+        if($idUsuario){
+            $controlador -> buscarPorDoctor($idUsuario);
+        }else{
+            $id ? $controlador -> buscarPorId($id) : $controlador -> listar();
+        }
         break;
 
     case 'POST':

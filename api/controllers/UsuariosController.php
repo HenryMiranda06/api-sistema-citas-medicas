@@ -86,4 +86,30 @@ class UsuariosController
             "message" => $this->dao->crearCuenta($usuario, $validacion["idInvitacion"])
         ]);
     }
+
+    public function listaUsuarios()
+    {
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->listar()
+        ]);
+    }
+
+    public function desactivarUsuario($idUsuario){
+        if (!$idUsuario) {
+            convertirJSON([
+                "code" => 200,
+                "message" => [
+                    "success" => false,
+                    "message" => "No se recibió el id del usuario."
+                ]
+            ]);
+            return;
+        }
+
+        convertirJSON([
+            "code" => 200,
+            "message" => $this->dao->desactivarUsuario($idUsuario)
+        ]);
+    }
 }

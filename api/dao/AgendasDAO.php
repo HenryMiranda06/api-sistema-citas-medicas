@@ -33,6 +33,35 @@ class AgendasDAO{
         }
     }
 
+    public function buscarPorDoctor($idUsuario){
+        try{
+            $query = "SELECT a.* FROM agenda a INNER JOIN doctores d ON a.idDoctor = d.idDoctor INNER JOIN usuarios u ON d.idPersona = u.idPersona
+                WHERE u.idUsuario = ?;";
+
+            $preparado = $this->conexion->prepare($query);
+            $preparado->execute([$idUsuario]);   
+            return $preparado->fetchAll(PDO::FETCH_ASSOC);
+        }catch(PDOException $e){
+            return ["error" => $e->getMessage()];
+        }
+    }
+
+    public function buscarDoctor($idUsuario){
+        try{
+            $query = "SELECT d.idDoctor FROM doctores d INNER JOIN usuarios u ON d.idPersona = u.idPersona WHERE u.idUsuario = ?;";
+
+            $preparado = $this->conexion->prepare($query);
+            $preparado->execute([$idUsuario]);
+
+            $resultado = $preparado->fetch(PDO::FETCH_ASSOC);
+
+            return $resultado ? $resultado['idDoctor'] : null;
+
+        }catch(PDOException $e ){
+            return null;
+        }
+    }
+
     public function registrar(Agendas $agenda){
         try{
             $query = "INSERT INTO agenda (idDoctor, fecha, horaInicio, horaFin, estado)
